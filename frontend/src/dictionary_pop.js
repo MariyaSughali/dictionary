@@ -96,16 +96,14 @@ function DictionaryPop() {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((item, index) => (
-              <React.Fragment key={index}>
-                {item.data.map((entry, subIndex) => (
-                  <tr key={subIndex}>
-                    <td>{entry.original_word}</td>
-                    <td>{entry.translated_word}</td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))}
+            {filteredData.map((item, index) =>
+              item.data.map((entry, subIndex) => (
+                <tr key={index + "-" + subIndex}>
+                  <td>{entry.original_word}</td>
+                  <td>{entry.translated_word}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
