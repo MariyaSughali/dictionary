@@ -2,9 +2,12 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-router.get("/getData", async (req, res) => {
+router.put("/isactive/:id", async (req, res) => {
+  const { isactive } = req.body;
+  const id = req.params.id;
   const result = await pool.query(
-    "SELECT * FROM dictionary_table JOIN language ON dictionary_table.language_id =language.language_id "
+    "UPDATE dictionary_table SET isactive=$1 WHERE id =$2",
+    [isactive, id]
   );
 
   res.send(result.rows);

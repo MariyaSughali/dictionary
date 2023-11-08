@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import "./App.css";
+import DictionaryView from "./dictionary_view";
 
 function Dictionary() {
   const [language, setLanguage] = useState([]);
@@ -193,6 +194,9 @@ function Dictionary() {
             </td>
           </tbody>
         </table>
+      </div>
+      <div>
+        <DictionaryView />
       </div>
     </div>
   );

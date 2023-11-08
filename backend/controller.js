@@ -13,6 +13,7 @@ const getsubcategoryRoutes = require("./routes/getsubcategory");
 const updateDataRoutes = require("./routes/updatedata");
 const getlanguageRoutes = require("./routes/getLanguage");
 const getDataRoutes = require("./routes/getData");
+const isactiveRoutes = require("./routes/isactive");
 
 app.post("/post", addDataRoutes);
 app.get("/getcategory", getcategoryRoutes);
@@ -20,5 +21,6 @@ app.get("/getsubcategory/:category", getsubcategoryRoutes);
 app.put("/updatedata", updateDataRoutes);
 app.get("/getlanguage", getlanguageRoutes);
 app.get("/getData", getDataRoutes);
+app.put("/isactive/:id", isactiveRoutes);
 
 module.exports = app;
