@@ -178,6 +178,7 @@ function Dictionary() {
                 {fileName || "Upload file"}
               </label>
               <input
+                className="input"
                 type="file"
                 accept=".xlsx"
                 id="file"

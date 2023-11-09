@@ -22,7 +22,7 @@
   height: 40px;
   width: 200px;
 }
-.dictionary input {
+.input {
   display: none;
 }
 .dictionary label:hover,
