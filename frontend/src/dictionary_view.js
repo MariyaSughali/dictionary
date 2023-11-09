@@ -26,17 +26,36 @@ function DictionaryView() {
     updatedToggleStates[index] = !updatedToggleStates[index];
     setToggleStates(updatedToggleStates);
   };
-
   const updateDataInDatabase = (id, isactive) => {
     axios
       .put(`http://localhost:9090/isactive/${id}`, { isactive })
       .then((res) => {
         if (res.status === 200) {
           console.log("Data updated successfully in the database.");
+        } else {
+          console.error("Unexpected response status:", res.status);
         }
       })
       .catch((error) => {
-        console.error("Error updating data:", error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // other than 2xx (e.g., 404, 500).
+          if (error.response.status === 404) {
+            console.error("Data not found. Check the ID:", id);
+          } else {
+            console.error(
+              "Server responded with an error status:",
+              error.response.status
+            );
+            console.error("Error response data:", error.response.data);
+          }
+        } else if (error.request) {
+          // The request was made but no response was received.
+          console.error("No response received from the server:", error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error.
+          console.error("Error setting up the request:", error.message);
+        }
       });
   };
 
@@ -49,8 +68,8 @@ function DictionaryView() {
               <th>Category</th>
               <th>Subcategory</th>
               <th>Language</th>
-              <th>Toggle</th>
-              <th>Active</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>

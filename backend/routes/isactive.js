@@ -5,12 +5,22 @@ const pool = require("../config/db");
 router.put("/isactive/:id", async (req, res) => {
   const { isactive } = req.body;
   const id = req.params.id;
-  const result = await pool.query(
-    "UPDATE dictionary_table SET isactive=$1 WHERE id =$2",
-    [isactive, id]
-  );
 
-  res.send(result.rows);
+  try {
+    const result = await pool.query(
+      "UPDATE dictionary_table SET isactive=$1 WHERE id =$2 RETURNING *",
+      [isactive, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Invalid ID. Data not found." });
+    }
+
+    res.send(result.rows);
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 module.exports = router;
