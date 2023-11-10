@@ -14,7 +14,10 @@ function DictionaryPop() {
       .get("http://localhost:9090/getData")
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          setData(res.data);
+          const data = res.data.filter(
+            (item) => item.isactive === true || item.isactive === null
+          );
+          setData(data);
         }
       })
       .catch((error) => {
@@ -139,7 +142,7 @@ function DictionaryPop() {
           <tbody>
             {filteredData.map((item, index) =>
               item.data.map((entry, subIndex) => (
-                <tr key={index + "-" + subIndex}>
+                <tr key={item + "-" + entry}>
                   <td>{entry.original_word}</td>
                   <td>{entry.translated_word}</td>
                 </tr>

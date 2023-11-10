@@ -20,7 +20,6 @@ function Dictionary() {
       .get("http://localhost:9090/getcategory")
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          // console.log(res.data);
           setCategories(res.data);
         }
       })
@@ -31,7 +30,6 @@ function Dictionary() {
       .get("http://localhost:9090/getlanguage")
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          // console.log(res.data);
           setLanguage(res.data);
         }
       })
@@ -67,7 +65,6 @@ function Dictionary() {
       "text/csv",
     ];
     let selectedFile = e.target.files[0];
-    // console.log("handlefile");
 
     if (selectedFile) {
       if (selectedFile && fileTypes.includes(selectedFile.type)) {
@@ -97,14 +94,10 @@ function Dictionary() {
       const datas = XLSX.utils.sheet_to_json(worksheet);
       // request
       function uploadData(datas) {
-        // console.log(selectedCategory);
-        // console.log(selectedSubCategory);
-        // console.log(datas);
         const jsondata = datas.map((item) => ({
           original_word: item.original_word,
           translated_word: item.translated_word,
         }));
-        // console.log(jsondata);
 
         const data = {
           category: selectedCategory,
