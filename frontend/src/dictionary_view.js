@@ -11,7 +11,6 @@ function DictionaryView() {
       .then((res) => {
         if (res.data && res.data.length > 0) {
           setData(res.data);
-          // Initialize toggle states based on data from the database
           const initialToggleStates = res.data.map((item) => item.isactive);
           setToggleStates(initialToggleStates);
         }
@@ -38,8 +37,6 @@ function DictionaryView() {
       })
       .catch((error) => {
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // other than 2xx (e.g., 404, 500).
           if (error.response.status === 404) {
             console.error("Data not found. Check the ID:", id);
           } else {
@@ -50,10 +47,8 @@ function DictionaryView() {
             console.error("Error response data:", error.response.data);
           }
         } else if (error.request) {
-          // The request was made but no response was received.
           console.error("No response received from the server:", error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error.
           console.error("Error setting up the request:", error.message);
         }
       });
