@@ -4,7 +4,7 @@ const pool = require("../config/db");
 
 router.get("/getData", async (req, res) => {
   const result = await pool.query(
-    "SELECT * FROM dictionary_table JOIN language ON dictionary_table.language_id =language.language_id "
+    "SELECT * FROM dictionary JOIN category ON dictionary.category_id=category_id.category_id  "
   );
 
   res.send(result.rows);

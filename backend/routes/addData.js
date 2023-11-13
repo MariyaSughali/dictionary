@@ -4,7 +4,6 @@ const pool = require("../config/db");
 
 router.post("/post", async (req, res) => {
   const { jsonData, category, subcategory, language } = req.body;
-  // console.log(jsonData);
 
   // Stringify the JSON data
   const jsonDataString = JSON.stringify(jsonData);
@@ -14,7 +13,6 @@ router.post("/post", async (req, res) => {
     [language]
   );
   const language_id = result.rows[0].language_id;
-  // console.log("lang:" + language_id);
   const insertQuery = `INSERT INTO dictionary_table (data, category, subcategory,language_id) VALUES ($1, $2, $3,$4)`;
 
   try {

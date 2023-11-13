@@ -17,32 +17,43 @@ router.put("/updateData", async (req, res) => {
     const language_id = languageResult.rows[0].language_id;
 
     const existingData = await pool.query(
-      `SELECT * FROM dictionary_table WHERE category=$1 AND subcategory=$2 AND language_id=$3`,
-      [category, subcategory, language_id]
+      `SELECT * FROM dictionary 
+       JOIN category_id ON dictionary.category_id = category_id.category_id 
+       WHERE category_id.name = $1 AND category_id.language_id = $2`,
+      [subcategory, language_id]
     );
 
     if (existingData.rows.length > 0) {
       // Data exists, perform update
-      const updateQuery = `UPDATE dictionary_table SET data=$1 WHERE category=$2 AND subcategory=$3 AND language_id=$4`;
+      const categoryResult = await pool.query(
+        "SELECT category_id FROM category_id WHERE name = $1 AND language_id = $2",
+        [subcategory, language_id]
+      );
 
-      await pool.query(updateQuery, [
-        jsonDataString,
-        category,
-        subcategory,
-        language_id,
-      ]);
+      const category_id = categoryResult.rows[0].category_id;
+
+      const updateQuery = `UPDATE dictionary SET file_data=$1 WHERE category_id=$2`;
+
+      await pool.query(updateQuery, [jsonDataString, category_id]);
 
       res.send("Data updated successfully.");
     } else {
       // Data doesn't exist, perform insert
-      const insertQuery = `INSERT INTO dictionary_table (category, subcategory, language_id, data, isactive) VALUES ($1, $2, $3, $4,true)`;
 
-      await pool.query(insertQuery, [
-        category,
-        subcategory,
-        language_id,
-        jsonDataString,
-      ]);
+      await pool.query(
+        "INSERT INTO category_id (is_parent,isactve,name,language_id,parent_id VALUES (false,"
+      );
+      const insertQuery = `INSERT INTO dictionary (category_id, file_data, is_active) 
+                           VALUES ($1, $2, true)`;
+
+      const categoryResult = await pool.query(
+        "SELECT category_id FROM category_id WHERE name = $1 AND language_id = $2",
+        [subcategory, language_id]
+      );
+
+      const category_id = categoryResult.rows[0].category_id;
+
+      await pool.query(insertQuery, [category_id, jsonDataString]);
 
       res.send("Data inserted successfully.");
     }
