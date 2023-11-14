@@ -22,7 +22,6 @@ router.get("/getsubcategory/:category_id", async (req, res) => {
 
       res.send(subcategoriesArray);
     } else {
-      // Handle the case where the category is not found
       res.status(404).send("Category not found");
     }
   } catch (error) {

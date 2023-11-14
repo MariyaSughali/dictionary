@@ -18,6 +18,7 @@ function Dictionary() {
   const [fileName, setFileName] = useState("");
   const [ischanged, setischanged] = useState("true");
   const [reloadView, setReloadView] = useState(false);
+  const [exists, setexists] = useState(false);
 
   useEffect(() => {
     axios
@@ -25,12 +26,13 @@ function Dictionary() {
       .then((res) => {
         if (res.data && res.data.length > 0) {
           setLanguage(res.data);
+          setFileName("");
         }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }, [ischanged]);
 
   const handleLanguageChange = (e) => {
     const selectedLanguageId = e.target.value;
@@ -40,6 +42,9 @@ function Dictionary() {
       .then((res) => {
         if (res.data && res.data.length > 0) {
           setCategories(res.data);
+          setSelectedCategory("");
+          setSelectedSubCategory("");
+          setSubcategories([]);
         }
       })
       .catch((error) => {
@@ -55,6 +60,7 @@ function Dictionary() {
       .then((res) => {
         if (res.data && res.data.length > 0) {
           setSubcategories(res.data);
+          setSelectedSubCategory("");
         }
       })
       .catch((error) => {
@@ -93,6 +99,74 @@ function Dictionary() {
     }
   };
 
+  // const handleFileSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (excelFile !== null) {
+  //     const workbook = XLSX.read(excelFile, { type: "buffer" });
+  //     const worksheetName = workbook.SheetNames[0];
+  //     const worksheet = workbook.Sheets[worksheetName];
+  //     const datas = XLSX.utils.sheet_to_json(worksheet);
+  //     // request
+  //     function uploadData(datas) {
+  //       const jsondata = datas.map((item) => ({
+  //         original_word: item.original_word,
+  //         translated_word: item.translated_word,
+  //       }));
+
+  //       const data = {
+  //         category: selectedCategory,
+  //         subcategory: selectedSubCategory,
+  //         jsonData: jsondata,
+  //         language: selectedLanguage,
+  //       };
+
+  //       axios
+  //         .put("http://localhost:9090/updateData", data)
+  //         .then((response) => {
+  //           console.log("Axios Response: ", response.data);
+  //           setReloadView(!reloadView);
+  //         })
+  //         .catch((error) => {
+  //           console.error("Axios Error: ", error);
+  //         });
+  //     }
+
+  //     axios
+  //       .get(`http://localhost:9090/checkDataExists/${selectedSubCategory}`)
+  //       .then((response) => {
+  //         if (response.status === 200 && response.data === "Data exists") {
+  //           console.log(response.status);
+  //           const confirmInsert = window.confirm(
+  //             "Data already exists. Do you want to replace the existing data?"
+  //           );
+
+  //           if (confirmInsert) {
+  //             uploadData(datas);
+  //           } else {
+  //             return;
+  //           }
+  //         } else if (
+  //           response.status === 404 &&
+  //           response.data === "Data does not exist"
+  //         ) {
+  //           console.log(response.status);
+  //           uploadData(datas);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error while checking data existence:", error);
+  //       });
+
+  //     //uploadData(datas);
+  //     setischanged(!ischanged);
+  //     setSelectedCategory("");
+  //     setSelectedSubCategory("");
+  //     setSelectedLanguage("");
+  //     // setFileName("")
+  //   }
+  // };
+
   const handleFileSubmit = async (e) => {
     e.preventDefault();
 
@@ -101,22 +175,19 @@ function Dictionary() {
       const worksheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[worksheetName];
       const datas = XLSX.utils.sheet_to_json(worksheet);
-      // request
-      function uploadData(datas) {
+
+      function uploadData(datas, url) {
         const jsondata = datas.map((item) => ({
           original_word: item.original_word,
           translated_word: item.translated_word,
         }));
-
         const data = {
-          category: selectedCategory,
-          subcategory: selectedSubCategory,
+          category_id: selectedSubCategory,
           jsonData: jsondata,
-          language: selectedLanguage,
         };
 
         axios
-          .put("http://localhost:9090/updateData", data)
+          .put(url, data)
           .then((response) => {
             console.log("Axios Response: ", response.data);
             setReloadView(!reloadView);
@@ -125,13 +196,27 @@ function Dictionary() {
             console.error("Axios Error: ", error);
           });
       }
+      axios
+        .get(`http://localhost:9090/checkDataExists/${selectedSubCategory}`)
+        .then((res) => {
+          if (res.data.length > 0) {
+            console.log("exists");
+            setexists(true);
+            uploadData(datas, "http://localhost:9090/updateExistingData");
+          } else {
+            console.log(res);
+            console.log("does not exists");
+            uploadData(datas, "http://localhost:9090/updateData");
+          }
+        })
+        .catch((error) => {
+          console.error("Error while checking data existence:", error);
+        });
 
-      uploadData(datas);
       setischanged(!ischanged);
       setSelectedCategory("");
       setSelectedSubCategory("");
       setSelectedLanguage("");
-      // setFileName("")
     }
   };
 
@@ -185,7 +270,7 @@ function Dictionary() {
                   >
                     <option value="">Select a subcategory</option>
                     {subcategories.map((subcat, index) => (
-                      <option key={index} value={subcat.subcategory_id}>
+                      <option key={index} value={subcat.category_id}>
                         {subcat.name}
                       </option>
                     ))}
@@ -214,6 +299,11 @@ function Dictionary() {
               </tbody>
             </table>
           </div>
+          {exists && (
+            <div>
+              <p> data exist</p>
+            </div>
+          )}
 
           <div className="table2">
             <DictionaryView

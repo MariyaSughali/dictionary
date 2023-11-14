@@ -14,6 +14,8 @@ const updateDataRoutes = require("./routes/updatedata");
 const getlanguageRoutes = require("./routes/getLanguage");
 const getDataRoutes = require("./routes/getData");
 const isactiveRoutes = require("./routes/isactive");
+const checkDataExistsRoutes = require("./routes/checkDataExists");
+const updateExistingDataRoutes = require("./routes/updateExistingData");
 
 app.post("/post", addDataRoutes);
 app.get("/getcategory/:language_id", getcategoryRoutes);
@@ -22,5 +24,7 @@ app.put("/updatedata", updateDataRoutes);
 app.get("/getlanguage", getlanguageRoutes);
 app.get("/getData", getDataRoutes);
 app.put("/isactive/:id", isactiveRoutes);
+app.get("/checkDataExists/:category_id", checkDataExistsRoutes);
+app.put("/updateExistingData", updateExistingDataRoutes);
 
 module.exports = app;
