@@ -22,7 +22,6 @@ router.post("/post", async (req, res) => {
       subcategory,
       language_id,
     ]);
-    // console.log("Data inserted:", result.rowCount, "row(s) affected");
     res.send("Data received and processed.");
   } catch (error) {
     console.error("Error inserting data:", error);

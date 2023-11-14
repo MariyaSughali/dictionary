@@ -8,7 +8,7 @@ router.put("/isactive/:id", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "UPDATE dictionary_table SET isactive=$1 WHERE id =$2 RETURNING *",
+      "UPDATE category_id SET is_active=$1 WHERE category_id =$2 RETURNING *",
       [isactive, id]
     );
 

@@ -17,10 +17,26 @@ function Dictionary() {
   const [typeError, setTypeError] = useState(null);
   const [fileName, setFileName] = useState("");
   const [ischanged, setischanged] = useState("true");
+  const [reloadView, setReloadView] = useState(false);
 
   useEffect(() => {
     axios
-      .get("http://localhost:9090/getcategory")
+      .get("http://localhost:9090/getlanguage")
+      .then((res) => {
+        if (res.data && res.data.length > 0) {
+          setLanguage(res.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  const handleLanguageChange = (e) => {
+    const selectedLanguageId = e.target.value;
+    setSelectedLanguage(selectedLanguageId);
+    axios
+      .get(`http://localhost:9090/getcategory/${selectedLanguageId}`)
       .then((res) => {
         if (res.data && res.data.length > 0) {
           setCategories(res.data);
@@ -29,38 +45,26 @@ function Dictionary() {
       .catch((error) => {
         console.error("Error:", error);
       });
+  };
+
+  const handleCategoryChange = (e) => {
+    const selectedCategoryId = e.target.value;
+    setSelectedCategory(selectedCategoryId);
     axios
-      .get("http://localhost:9090/getlanguage")
+      .get(`http://localhost:9090/getsubcategory/${selectedCategoryId}`)
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          // console.log(res.data);
-          setLanguage(res.data);
-          setFileName("");
+          setSubcategories(res.data);
         }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [ischanged]);
-
-  const handleCategoryChange = (e) => {
-    const category = e.target.value;
-    setSelectedCategory(category);
-
-    axios
-      .get(`http://localhost:9090/getsubcategory/${category}`)
-      .then((res) => {
-        setSubcategories(res.data);
-      });
   };
 
   const handleSubCategoryChange = (e) => {
-    const subcategory = e.target.value;
-    setSelectedSubCategory(subcategory);
-  };
-  const handleLanguageChange = (e) => {
-    const language = e.target.value;
-    setSelectedLanguage(language);
+    const selectedSubCategoryId = e.target.value;
+    setSelectedSubCategory(selectedSubCategoryId);
   };
 
   const handleFile = (e) => {
@@ -70,7 +74,6 @@ function Dictionary() {
       "text/csv",
     ];
     let selectedFile = e.target.files[0];
-    // console.log("handlefile");
 
     if (selectedFile) {
       if (selectedFile && fileTypes.includes(selectedFile.type)) {
@@ -104,7 +107,6 @@ function Dictionary() {
           original_word: item.original_word,
           translated_word: item.translated_word,
         }));
-        // console.log(jsondata);
 
         const data = {
           category: selectedCategory,
@@ -117,6 +119,7 @@ function Dictionary() {
           .put("http://localhost:9090/updateData", data)
           .then((response) => {
             console.log("Axios Response: ", response.data);
+            setReloadView(!reloadView);
           })
           .catch((error) => {
             console.error("Axios Error: ", error);
@@ -142,22 +145,35 @@ function Dictionary() {
           <div className="tables">
             <table>
               <thead>
+                <th>Language</th>
                 <th>Category</th>
                 <th>Subcategory</th>
-                <th>Language</th>
                 <th></th>
                 <th></th>
               </thead>
               <tbody>
                 <td className="body_content">
                   <select
+                    value={selectedLanguage}
+                    onChange={handleLanguageChange}
+                  >
+                    <option value="">Select a language</option>
+                    {language.map((lang, index) => (
+                      <option key={index} value={lang.language_id}>
+                        {lang.language_name}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="body_content">
+                  <select
                     value={selectedCategory}
                     onChange={handleCategoryChange}
                   >
                     <option value="">Select a category</option>
-                    {categories.map((category, index) => (
-                      <option key={index} value={category}>
-                        {category}
+                    {categories.map((cat, index) => (
+                      <option key={index} value={cat.category_id}>
+                        {cat.name}
                       </option>
                     ))}
                   </select>
@@ -168,22 +184,9 @@ function Dictionary() {
                     onChange={handleSubCategoryChange}
                   >
                     <option value="">Select a subcategory</option>
-                    {subcategories.map((subcategory, index) => (
-                      <option key={index} value={subcategory}>
-                        {subcategory}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="body_content">
-                  <select
-                    value={selectedLanguage}
-                    onChange={handleLanguageChange}
-                  >
-                    <option value="">Select a language</option>
-                    {language.map((language, index) => (
-                      <option key={index} value={language}>
-                        {language}
+                    {subcategories.map((subcat, index) => (
+                      <option key={index} value={subcat.subcategory_id}>
+                        {subcat.name}
                       </option>
                     ))}
                   </select>
@@ -213,7 +216,11 @@ function Dictionary() {
           </div>
 
           <div className="table2">
-            <DictionaryView ischanged={ischanged} />
+            <DictionaryView
+              ischanged={ischanged}
+              reloadView={reloadView}
+              key={reloadView}
+            />{" "}
           </div>
         </div>
       </div>

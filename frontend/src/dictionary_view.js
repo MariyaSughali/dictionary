@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-function DictionaryView() {
+function DictionaryView({ ischanged, reloadView }) {
   const [data, setData] = useState([]);
   const [toggleStates, setToggleStates] = useState([]);
 
@@ -11,52 +11,39 @@ function DictionaryView() {
       .then((res) => {
         if (res.data && res.data.length > 0) {
           setData(res.data);
-          const initialToggleStates = res.data.map((item) => item.isactive);
+          // Initialize toggle states based on data from the database
+          console.log(res.data);
+          const initialToggleStates = res.data.map((item) => item.is_active);
           setToggleStates(initialToggleStates);
         }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }, [ischanged, reloadView]);
 
   const toggleSwitch = (index) => {
     const updatedToggleStates = [...toggleStates];
     updatedToggleStates[index] = !updatedToggleStates[index];
     setToggleStates(updatedToggleStates);
   };
+
   const updateDataInDatabase = (id, isactive) => {
     axios
       .put(`http://localhost:9090/isactive/${id}`, { isactive })
       .then((res) => {
         if (res.status === 200) {
           console.log("Data updated successfully in the database.");
-        } else {
-          console.error("Unexpected response status:", res.status);
         }
       })
       .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 404) {
-            console.error("Data not found. Check the ID:", id);
-          } else {
-            console.error(
-              "Server responded with an error status:",
-              error.response.status
-            );
-            console.error("Error response data:", error.response.data);
-          }
-        } else if (error.request) {
-          console.error("No response received from the server:", error.request);
-        } else {
-          console.error("Error setting up the request:", error.message);
-        }
+        console.error("Error updating data:", error);
       });
   };
 
   return (
     <div>
-      <div className="dictionary">
+      <div className="view_dictionary">
         <table>
           <thead>
             <tr>
@@ -70,8 +57,8 @@ function DictionaryView() {
           <tbody>
             {data.map((item, index) => (
               <tr key={item.id}>
-                <td>{item.category}</td>
-                <td>{item.subcategory}</td>
+                <td>{item.parent_category_name}</td>
+                <td>{item.category_name}</td>
                 <td>{item.language_name}</td>
                 <td>
                   <label className="switch">
@@ -79,7 +66,10 @@ function DictionaryView() {
                       type="checkbox"
                       onChange={() => {
                         toggleSwitch(index);
-                        updateDataInDatabase(item.id, !toggleStates[index]);
+                        updateDataInDatabase(
+                          item.category_id,
+                          !toggleStates[index]
+                        );
                       }}
                       checked={toggleStates[index]}
                     />
