@@ -15,7 +15,7 @@ function Topbar() {
           {/* <input className="inputbox" type="text"></input> */}
         </div>
         <div className="notification">
-          <span class="material-symbols-outlined icon1">notifications</span>
+          <span className="material-symbols-outlined icon1">notifications</span>
         </div>
         <div className="gap"></div>
         <div className="profile">

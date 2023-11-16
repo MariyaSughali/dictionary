@@ -5,7 +5,7 @@ function Sidebar() {
       <aside>
         <div className="sidebar">
           <a href="/reviewerDashboard" className={"icon"}>
-            <span class="material-symbols-outlined google-icon">home</span>
+            <span className="material-symbols-outlined google-icon">home</span>
             <h4 className="text">DASHBOARD</h4>
           </a>
           {/* <a className={"icon"}>
@@ -15,7 +15,7 @@ function Sidebar() {
 <h4 className="text">PENDING REPORTS</h4>
 </a> */}
           <a className={"icon"}>
-            <span class="material-symbols-outlined">add_task</span>
+            <span className="material-symbols-outlined">add_task</span>
             <h4 className="text">ASSIGN TASK</h4>
           </a>
           <a href="#" className={"icon"}>

@@ -16,7 +16,7 @@ function Dictionary() {
   const [excelFile, setExcelFile] = useState(null);
   const [typeError, setTypeError] = useState(null);
   const [fileName, setFileName] = useState("");
-  const [ischanged, setischanged] = useState("true");
+  const [ischanged, setischanged] = useState(true);
   const [reloadView, setReloadView] = useState(false);
   const [exists, setexists] = useState(false);
 
@@ -82,7 +82,7 @@ function Dictionary() {
     let selectedFile = e.target.files[0];
 
     if (selectedFile) {
-      if (selectedFile && fileTypes.includes(selectedFile.type)) {
+      if (fileTypes.includes(selectedFile.type)) {
         setTypeError(null);
         let reader = new FileReader();
         reader.readAsArrayBuffer(selectedFile);
@@ -98,74 +98,6 @@ function Dictionary() {
       console.log("Please select your file");
     }
   };
-
-  // const handleFileSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (excelFile !== null) {
-  //     const workbook = XLSX.read(excelFile, { type: "buffer" });
-  //     const worksheetName = workbook.SheetNames[0];
-  //     const worksheet = workbook.Sheets[worksheetName];
-  //     const datas = XLSX.utils.sheet_to_json(worksheet);
-  //     // request
-  //     function uploadData(datas) {
-  //       const jsondata = datas.map((item) => ({
-  //         original_word: item.original_word,
-  //         translated_word: item.translated_word,
-  //       }));
-
-  //       const data = {
-  //         category: selectedCategory,
-  //         subcategory: selectedSubCategory,
-  //         jsonData: jsondata,
-  //         language: selectedLanguage,
-  //       };
-
-  //       axios
-  //         .put("http://localhost:9090/updateData", data)
-  //         .then((response) => {
-  //           console.log("Axios Response: ", response.data);
-  //           setReloadView(!reloadView);
-  //         })
-  //         .catch((error) => {
-  //           console.error("Axios Error: ", error);
-  //         });
-  //     }
-
-  //     axios
-  //       .get(`http://localhost:9090/checkDataExists/${selectedSubCategory}`)
-  //       .then((response) => {
-  //         if (response.status === 200 && response.data === "Data exists") {
-  //           console.log(response.status);
-  //           const confirmInsert = window.confirm(
-  //             "Data already exists. Do you want to replace the existing data?"
-  //           );
-
-  //           if (confirmInsert) {
-  //             uploadData(datas);
-  //           } else {
-  //             return;
-  //           }
-  //         } else if (
-  //           response.status === 404 &&
-  //           response.data === "Data does not exist"
-  //         ) {
-  //           console.log(response.status);
-  //           uploadData(datas);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error while checking data existence:", error);
-  //       });
-
-  //     //uploadData(datas);
-  //     setischanged(!ischanged);
-  //     setSelectedCategory("");
-  //     setSelectedSubCategory("");
-  //     setSelectedLanguage("");
-  //     // setFileName("")
-  //   }
-  // };
 
   const handleFileSubmit = async (e) => {
     e.preventDefault();
