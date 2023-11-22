@@ -1,0 +1,1 @@
+ 2webX¦hr7coverage/lcov-report/backend/routes/getcategory.js.html

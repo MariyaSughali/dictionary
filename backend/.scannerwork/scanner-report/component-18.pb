@@ -1,0 +1,1 @@
+ 2webX£hr4coverage/lcov-report/backend/routes/isactive.js.html

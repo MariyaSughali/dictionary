@@ -14,10 +14,11 @@ function DictionaryPop() {
       .get("http://localhost:9090/getData")
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          const data = res.data.filter(
-            (item) => item.isactive === true || item.isactive === null
+          const filteredData = res.data.filter(
+            (item) => item.is_active === true || item.is_active === null
           );
-          setData(data);
+          setData(filteredData);
+          console.log(filteredData);
         }
       })
       .catch((error) => {
@@ -29,94 +30,56 @@ function DictionaryPop() {
     const filteredSubcategories = [
       ...new Set(
         data
-          .filter((item) => item.category === categoryFilter)
-          .map((item) => item.subcategory)
+          .filter((item) => item.parent_category_name === categoryFilter)
+          .map((item) => item.category_name)
       ),
     ];
     setSubcategories(filteredSubcategories);
   }, [categoryFilter, data]);
-  useEffect(() => {
-    if (categoryFilter !== "All") {
-      const filteredSubcategories = [
-        ...new Set(
-          data
-            .filter((item) => item.category === categoryFilter)
-            .map((item) => item.subcategory)
-        ),
-      ];
-      setSubcategories(filteredSubcategories);
-    } else {
-      setSubcategories([]);
-      setSubcategoryFilter("All"); // Reset subcategory filter when category is "All"
-    }
 
-    setFilteredData(
-      data.filter((item) => {
-        return (
-          (categoryFilter === "All" || item.category === categoryFilter) &&
-          (subcategoryFilter === "All" ||
-            item.subcategory === subcategoryFilter) &&
-          (languageFilter === "All" || item.language_name === languageFilter)
-        );
-      })
-    );
+  useEffect(() => {
+    const updatedFilteredData = data.filter((item) => {
+      return (
+        (categoryFilter === "All" ||
+          item.parent_category_name === categoryFilter) &&
+        (subcategoryFilter === "All" ||
+          item.category_name === subcategoryFilter) &&
+        (languageFilter === "All" || item.language_name === languageFilter)
+      );
+    });
+    console.log(updatedFilteredData);
+    setFilteredData(updatedFilteredData);
   }, [categoryFilter, subcategoryFilter, languageFilter, data]);
 
-  const handleFilter = (e) => {
-    const inputValue = e.target.value.toLowerCase();
+  // const handleFilter = (e) => {
+  //   const inputValue = e.target.value.toLowerCase();
 
-    const filteredResult = data.map((item) => ({
-      ...item,
-      data: item.data.filter(
-        (entry) =>
-          entry.original_word.toLowerCase().startsWith(inputValue) &&
-          (categoryFilter === "All" || item.category === categoryFilter) &&
-          (subcategoryFilter === "All" ||
-            item.subcategory === subcategoryFilter) &&
-          (languageFilter === "All" || item.language_name === languageFilter)
-      ),
-    }));
+  //   const updatedFilteredData = data.map((item) => ({
+  //     ...item,
+  //     data: item.file_data.filter(
+  //       (entry) =>
+  //         entry.original_word.toLowerCase().startsWith(inputValue) &&
+  //         (categoryFilter === "All" ||
+  //           item.parent_category_name === categoryFilter) &&
+  //         (subcategoryFilter === "All" ||
+  //           item.category_name === subcategoryFilter) &&
+  //         (languageFilter === "All" || item.language_name === languageFilter)
+  //     ),
+  //   }));
 
-    setFilteredData(filteredResult);
-  };
+  //   setFilteredData(updatedFilteredData);
+  // };
 
   return (
     <div>
       <p>DICTIONARY</p>
       <div className="dictionary">
         <label>
-          Category:
-          <select
-            onChange={(e) => {
-              setCategoryFilter(e.target.value);
-            }}
-          >
-            <option value="All">All</option>
-            {[...new Set(data.map((item) => item.category))].map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Subcategory:
-          <select onChange={(e) => setSubcategoryFilter(e.target.value)}>
-            <option value="All">All</option>
-            {subcategories.map((subcategory) => (
-              <option key={subcategory} value={subcategory}>
-                {subcategory}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <br></br>
-        <br></br>
-        <label>
           Language:
-          <select onChange={(e) => setLanguageFilter(e.target.value)}>
+          <select
+            value={languageFilter}
+            onChange={(e) => setLanguageFilter(e.target.value)}
+          >
             <option value="All">All</option>
             {[...new Set(data.map((item) => item.language_name))].map(
               (language) => (
@@ -130,8 +93,43 @@ function DictionaryPop() {
         <br></br>
         <br></br>
         <label>
-          Search <input type="text" onChange={(e) => handleFilter(e)}></input>
+          Category:
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="All">All</option>
+            {[...new Set(data.map((item) => item.parent_category_name))].map(
+              (category_name) => (
+                <option key={category_name} value={category_name}>
+                  {category_name}
+                </option>
+              )
+            )}
+          </select>
         </label>
+
+        <label>
+          Subcategory:
+          <select
+            value={subcategoryFilter}
+            onChange={(e) => setSubcategoryFilter(e.target.value)}
+          >
+            <option value="All">All</option>
+            {subcategories.map((category_name) => (
+              <option key={category_name} value={category_name}>
+                {category_name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <br></br>
+        <br></br>
+
+        {/* <label>
+          Search <input type="text" onChange={handleFilter}></input>
+        </label> */}
         <table>
           <thead>
             <tr>
@@ -140,13 +138,19 @@ function DictionaryPop() {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((item, index) =>
-              item.data.map((entry, subIndex) => (
-                <tr key={item + "-" + entry}>
-                  <td>{entry.original_word}</td>
-                  <td>{entry.translated_word}</td>
-                </tr>
-              ))
+            {filteredData.length > 0 ? (
+              filteredData.map((item, index) =>
+                item.file_data.map((entry, subIndex) => (
+                  <tr key={index + "-" + subIndex}>
+                    <td>{entry.original_word}</td>
+                    <td>{entry.translated_word}</td>
+                  </tr>
+                ))
+              )
+            ) : (
+              <tr>
+                <td colSpan="2">No data available</td>
+              </tr>
             )}
           </tbody>
         </table>

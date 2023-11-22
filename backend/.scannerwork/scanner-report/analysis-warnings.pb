@@ -1,0 +1,2 @@
+±
+§Missing blame information for 20 files. This may lead to some features not working correctly. Please check the analysis logs and refer to <a href="https://docs.sonarsource.com/sonarqube/10.3/analyzing-source-code/scm-integration/" rel="noopener noreferrer" target="_blank">the documentation</a>.ª’áÄ½1

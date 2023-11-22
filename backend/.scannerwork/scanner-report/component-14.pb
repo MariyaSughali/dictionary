@@ -1,0 +1,1 @@
+ 2webX¬hr3coverage/lcov-report/backend/routes/getData.js.html

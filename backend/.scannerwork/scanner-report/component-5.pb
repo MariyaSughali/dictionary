@@ -1,0 +1,1 @@
+ 2xmlX¹hrcoverage/clover.xml

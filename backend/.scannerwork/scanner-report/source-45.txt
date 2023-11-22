@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\MariyaSughali\Desktop\dictionary\backend\__test__\api.test.js">
+    <testCase name="Get /getData Should return set of data" duration="115"/>
+    <testCase name="Get /getData Response time should be less than 200ms" duration="7"/>
+    <testCase name="Get /getData Response data should be an array" duration="7"/>
+    <testCase name="Get /getcategory Should return set of data" duration="6"/>
+    <testCase name="Get /getcategory Response time should be less than 200ms" duration="5"/>
+    <testCase name="Get /getcategory Response data should be an array" duration="5"/>
+    <testCase name="Get /getlanguage Should return set of data" duration="4"/>
+    <testCase name="Get /getlanguage Response time should be less than 200ms" duration="4"/>
+    <testCase name="Get /getlanguage Response data should be an array" duration="7"/>
+    <testCase name="GET /getsubcategory/:category Should return a set of data" duration="4"/>
+    <testCase name="GET /getsubcategory/:category Response time should be less than 200ms" duration="4"/>
+    <testCase name="PUT /isactive/:id Should update isactive field in the database" duration="18"/>
+    <testCase name="PUT /isactive/:id Should handle invalid ID with a 404 response" duration="5"/>
+  </file>
+</testExecutions>

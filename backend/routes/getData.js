@@ -10,13 +10,15 @@ router.get("/getData", async (req, res) => {
         c1.name AS category_name, 
         c2.name AS parent_category_name,
         l.language_name,
-        c1.is_active
+        c1.is_active,
+        d.file_data
       FROM 
-        public.category_id c1
-        LEFT JOIN public.category_id c2 ON c1.parent_id = c2.category_id
-        LEFT JOIN public.language l ON c1.language_id = l.language_id
+        category_id c1
+        LEFT JOIN category_id c2 ON c1.parent_id = c2.category_id
+        LEFT JOIN language l ON c1.language_id = l.language_id
+        LEFT JOIN dictionary d ON c1.category_id = d.category_id
       WHERE 
-        c1.parent_id IS NOT NULL
+        c1.parent_id IS NOT NULL AND  d.is_active IS NOT NULL
     `);
 
     res.send(result.rows);
