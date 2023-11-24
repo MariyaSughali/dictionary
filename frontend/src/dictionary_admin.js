@@ -107,12 +107,11 @@ function Dictionary() {
       const worksheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[worksheetName];
       const datas = XLSX.utils.sheet_to_json(worksheet);
+      console.log(datas);
 
       function uploadData(datas, url) {
-        const jsondata = datas.map((item) => ({
-          original_word: item.original_word,
-          translated_word: item.translated_word,
-        }));
+        const jsondata = datas;
+
         const data = {
           category_id: selectedSubCategory,
           jsonData: jsondata,

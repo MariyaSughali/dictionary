@@ -1,159 +1,180 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./App.css";
 
 function DictionaryPop() {
+  const [languageList, setLanguageList] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [categoryList, setCategoryList] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [subcategoryList, setSubcategoryList] = useState([]);
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [toShow, setToShow] = useState(false);
   const [data, setData] = useState([]);
-  const [categoryFilter, setCategoryFilter] = useState("All");
-  const [subcategoryFilter, setSubcategoryFilter] = useState("All");
-  const [languageFilter, setLanguageFilter] = useState("All");
-  const [subcategories, setSubcategories] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [headings, setHeadings] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:9090/getData")
+      .get("http://localhost:9090/getlanguage")
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          const filteredData = res.data.filter(
-            (item) => item.is_active === true || item.is_active === null
-          );
-          setData(filteredData);
-          console.log(filteredData);
+          setLanguageList(res.data);
         }
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error("Error fetching languages:", error);
       });
   }, []);
 
-  useEffect(() => {
-    const filteredSubcategories = [
-      ...new Set(
-        data
-          .filter((item) => item.parent_category_name === categoryFilter)
-          .map((item) => item.category_name)
-      ),
-    ];
-    setSubcategories(filteredSubcategories);
-  }, [categoryFilter, data]);
+  const handleLanguageChange = (e) => {
+    const selectedLanguageId = e.target.value;
+    setSelectedLanguage(selectedLanguageId);
+    axios
+      .get(`http://localhost:9090/getcategory/${selectedLanguageId}`)
+      .then((res) => {
+        if (res.data && res.data.length > 0) {
+          setCategoryList(res.data);
+          setSelectedCategory("");
+          setSelectedSubCategory("");
+          setSubcategoryList([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
 
-  useEffect(() => {
-    const updatedFilteredData = data.filter((item) => {
-      return (
-        (categoryFilter === "All" ||
-          item.parent_category_name === categoryFilter) &&
-        (subcategoryFilter === "All" ||
-          item.category_name === subcategoryFilter) &&
-        (languageFilter === "All" || item.language_name === languageFilter)
+  const handleCategoryChange = (e) => {
+    const selectedCategoryId = e.target.value;
+    setSelectedCategory(selectedCategoryId);
+    axios
+      .get(`http://localhost:9090/getsubcategory/${selectedCategoryId}`)
+      .then((res) => {
+        if (res.data && res.data.length > 0) {
+          setSubcategoryList(res.data);
+          setSelectedSubCategory("");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching subcategories:", error);
+      });
+  };
+
+  const handleSubCategoryChange = (e) => {
+    const selectedSubCategoryId = e.target.value;
+    setSelectedSubCategory(selectedSubCategoryId);
+  };
+
+  const handleApply = async () => {
+    setToShow(true);
+    try {
+      const res = await axios.get(
+        `http://localhost:9090/getData/${selectedSubCategory}`
       );
-    });
-    console.log(updatedFilteredData);
-    setFilteredData(updatedFilteredData);
-  }, [categoryFilter, subcategoryFilter, languageFilter, data]);
+      const responseData = res.data;
 
-  // const handleFilter = (e) => {
-  //   const inputValue = e.target.value.toLowerCase();
+      if (responseData.length > 0) {
+        setData(responseData);
+        console.log(responseData);
 
-  //   const updatedFilteredData = data.map((item) => ({
-  //     ...item,
-  //     data: item.file_data.filter(
-  //       (entry) =>
-  //         entry.original_word.toLowerCase().startsWith(inputValue) &&
-  //         (categoryFilter === "All" ||
-  //           item.parent_category_name === categoryFilter) &&
-  //         (subcategoryFilter === "All" ||
-  //           item.category_name === subcategoryFilter) &&
-  //         (languageFilter === "All" || item.language_name === languageFilter)
-  //     ),
-  //   }));
-
-  //   setFilteredData(updatedFilteredData);
-  // };
+        // Assuming the first item in the data contains headings
+        if (responseData.length > 0 && responseData[0].file_data) {
+          setHeadings(Object.keys(responseData[0].file_data[0]));
+          console.log(Object.keys(responseData[0].file_data[0]));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <div>
-      <p>DICTIONARY</p>
-      <div className="dictionary">
-        <label>
-          Language:
-          <select
-            value={languageFilter}
-            onChange={(e) => setLanguageFilter(e.target.value)}
-          >
-            <option value="All">All</option>
-            {[...new Set(data.map((item) => item.language_name))].map(
-              (language) => (
-                <option key={language} value={language}>
-                  {language}
-                </option>
-              )
-            )}
-          </select>
-        </label>
-        <br></br>
-        <br></br>
-        <label>
-          Category:
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-          >
-            <option value="All">All</option>
-            {[...new Set(data.map((item) => item.parent_category_name))].map(
-              (category_name) => (
-                <option key={category_name} value={category_name}>
-                  {category_name}
-                </option>
-              )
-            )}
-          </select>
-        </label>
-
-        <label>
-          Subcategory:
-          <select
-            value={subcategoryFilter}
-            onChange={(e) => setSubcategoryFilter(e.target.value)}
-          >
-            <option value="All">All</option>
-            {subcategories.map((category_name) => (
-              <option key={category_name} value={category_name}>
-                {category_name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <br></br>
-        <br></br>
-
-        {/* <label>
-          Search <input type="text" onChange={handleFilter}></input>
-        </label> */}
-        <table>
-          <thead>
-            <tr>
-              <th>ORIGINAL WORD</th>
-              <th>TRANSLATED WORD</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length > 0 ? (
-              filteredData.map((item, index) =>
-                item.file_data.map((entry, subIndex) => (
-                  <tr key={index + "-" + subIndex}>
-                    <td>{entry.original_word}</td>
-                    <td>{entry.translated_word}</td>
-                  </tr>
-                ))
-              )
+      <div className="pop">
+        {toShow ? (
+          <div>
+            {/* Content visible when toShow is true */}
+            {data ? (
+              <div>
+                <table>
+                  <thead>
+                    <tr>
+                      {headings.map((heading, index) => (
+                        <th key={index}>{heading.toUpperCase()}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.map((item, index) => (
+                      <React.Fragment key={index}>
+                        {item.file_data.map((entry, subIndex) => (
+                          <tr key={index + "-" + subIndex}>
+                            {headings.map((key, colIndex) => (
+                              <td key={colIndex}>{entry[key]}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
-              <tr>
-                <td colSpan="2">No data available</td>
-              </tr>
+              <div>No File is uploaded yet!</div>
             )}
-          </tbody>
-        </table>
+            <button onClick={() => setToShow(false)}>Back</button>
+          </div>
+        ) : (
+          // Visible when toShow is false
+          <div>
+            {/* Content visible when toShow is false */}
+            <p>Choose your dictionary</p>
+            <label>Language </label>
+            <br></br>
+            <select value={selectedLanguage} onChange={handleLanguageChange}>
+              <option value="">Select a language</option>
+              {languageList.map((lang, index) => (
+                <option key={index} value={lang.language_id}>
+                  {lang.language_name}
+                </option>
+              ))}
+            </select>
+
+            <br></br>
+            <label>Category </label>
+            <br></br>
+            <select value={selectedCategory} onChange={handleCategoryChange}>
+              <option value="">Select a category</option>
+              {categoryList.map((cat, index) => (
+                <option key={index} value={cat.category_id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+
+            <br></br>
+
+            <label>Sub-category </label>
+            <br></br>
+            <select
+              value={selectedSubCategory}
+              onChange={handleSubCategoryChange}
+            >
+              <option value="">Select a subcategory</option>
+              {subcategoryList.map((subcat, index) => (
+                <option key={index} value={subcat.category_id}>
+                  {subcat.name}
+                </option>
+              ))}
+            </select>
+
+            <br></br>
+            <br></br>
+            <div className="center">
+              <button onClick={handleApply}>APPLY</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

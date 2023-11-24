@@ -16,6 +16,7 @@ const getDataRoutes = require("./routes/getData");
 const isactiveRoutes = require("./routes/isactive");
 const checkDataExistsRoutes = require("./routes/checkDataExists");
 const updateExistingDataRoutes = require("./routes/updateExistingData");
+const getFileDataRoutes = require("./routes/getFileData");
 
 app.post("/post", addDataRoutes);
 app.get("/getcategory/:language_id", getcategoryRoutes);
@@ -26,5 +27,6 @@ app.get("/getData", getDataRoutes);
 app.put("/isactive/:id", isactiveRoutes);
 app.get("/checkDataExists/:category_id", checkDataExistsRoutes);
 app.put("/updateExistingData", updateExistingDataRoutes);
+app.get("/getData/:category_id", getFileDataRoutes);
 
 module.exports = app;

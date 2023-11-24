@@ -371,3 +371,42 @@ main aside .sidebar a:hover span {
 main aside .sidebar h4 {
   font-weight: bold;
 }
+
+.pop label {
+  font-family: "Raleway", sans-serif;
+  font-weight: 600;
+}
+.pop select {
+  border-color: rgb(136, 133, 133);
+  border-radius: 8px;
+  border-width: 2px;
+  height: 40px;
+  width: 200px;
+  text-align: inherit;
+  border-style: solid;
+  margin-bottom: 20px;
+  margin-top: 5px;
+}
+.pop button {
+  width: 150px;
+  height: 40px;
+  background-color: #e6592b;
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 400;
+}
+.pop {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+}
+.center {
+  display: flex;
+  justify-content: center;
+  color: white;
+}
+.pop p {
+  font-family: "Raleway", sans-serif;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
