@@ -79,8 +79,16 @@ function DictionaryPop() {
 
         // Assuming the first item in the data contains headings
         if (responseData.length > 0 && responseData[0].file_data) {
-          setHeadings(Object.keys(responseData[0].file_data[0]));
-          console.log(Object.keys(responseData[0].file_data[0]));
+          // Parse the stringified JSON to extract headings
+          const parsedFileData = JSON.parse(responseData[0].file_data);
+
+          if (Array.isArray(parsedFileData) && parsedFileData.length > 0) {
+            // Access keys (headings) from the first object in the parsed array
+            const firstObject = parsedFileData[0];
+            const headings = Object.keys(firstObject);
+            console.log(headings);
+            setHeadings(headings);
+          }
         }
       }
     } catch (error) {
@@ -105,17 +113,17 @@ function DictionaryPop() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.map((item, index) => (
-                      <React.Fragment key={index}>
-                        {item.file_data.map((entry, subIndex) => (
+                    {data.map(
+                      (item, index) =>
+                        Array.isArray(JSON.parse(item.file_data)) &&
+                        JSON.parse(item.file_data).map((entry, subIndex) => (
                           <tr key={index + "-" + subIndex}>
                             {headings.map((key, colIndex) => (
                               <td key={colIndex}>{entry[key]}</td>
                             ))}
                           </tr>
-                        ))}
-                      </React.Fragment>
-                    ))}
+                        ))
+                    )}
                   </tbody>
                 </table>
               </div>

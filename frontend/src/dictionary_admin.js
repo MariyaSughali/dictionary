@@ -114,7 +114,7 @@ function Dictionary() {
 
         const data = {
           category_id: selectedSubCategory,
-          jsonData: jsondata,
+          jsonData: JSON.stringify(jsondata),
         };
 
         axios
