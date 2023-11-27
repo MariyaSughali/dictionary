@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-router.get("/getData/:category_id", async (req, res) => {
+router.get("/getDataBysubcategory/:category_id", async (req, res) => {
   const category_id = req.params.category_id;
   try {
     const result = await pool.query(

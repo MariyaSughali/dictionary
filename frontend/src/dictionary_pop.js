@@ -68,9 +68,18 @@ function DictionaryPop() {
   const handleApply = async () => {
     setToShow(true);
     try {
-      const res = await axios.get(
-        `http://localhost:9090/getData/${selectedSubCategory}`
-      );
+      let url = "";
+      if (selectedSubCategory) {
+        url = `http://localhost:9090/getDataBysubcategory/${selectedSubCategory}`;
+      } else if (selectedCategory) {
+        // Fetch data with only category information
+        url = `http://localhost:9090/getDataByCategory/${selectedCategory}`;
+      } else {
+        console.error("Please select a category");
+        return;
+      }
+
+      const res = await axios.get(url);
       const responseData = res.data;
 
       if (responseData.length > 0) {
